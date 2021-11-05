@@ -1,0 +1,39 @@
+<% var page = '<!-- @@var pagename -->' %>
+
+<!DOCTYPE html>
+<html lang="zh-tw">
+
+<head>
+<% include include/_head %>
+<!-- IN-PAGE CSS -->
+<!-- @@placeholder= specific_stylesheet -->
+</head>
+
+<body>
+
+<!-- 如果有登入 - 加一個CLASS: .is-login -->
+<div class="layout-container is-login">
+<!-- HEADER START -->
+<%# include include/_header %>
+<!-- HEADER END   -->
+
+<!-- CONTENT START -->
+<div id="layout-view" class="layout-view <%= page %>">
+<!-- @@placeholder= content -->
+<!-- <div class="btn-backtop is-hide"></div> -->
+</div>
+<!-- CONTENT END   -->
+
+<!-- FOOTER START -->
+<% include include/_footer %>
+<!-- FOOTER END   -->
+</div>
+
+<!-- GLOBAL JS START -->
+<% include include/_js %>
+<!-- GLOBAL JS END   -->
+<!-- IN-PAGE JS START -->
+<!-- @@placeholder= specific_javascript -->
+<!-- IN-PAGE JS END -->
+</body>
+</html><!--2017_7_4_05_00-->

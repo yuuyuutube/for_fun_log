@@ -1,0 +1,47 @@
+
+<meta charset="UTF-8">
+<%# <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/> %>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0" />
+<meta name="Title" content="SITENAME" />
+<meta name="Author" content="" />
+<meta name="Description" content="SITENAME" />
+<% var og = [{
+    property: "og:title",
+    content: "SITENAME"
+  },{
+    property: "og:type",
+    content: "website"
+  },{
+    property: "og:url",
+    content: ""
+  },{
+    property: "og:image",
+    content: "images/share1200x630.jpg"
+  },{
+    property: "og:site_name",
+    content: "SITENAME"
+  },{
+    property: "og:description",
+    content: "SITENAME"
+  },{
+    property: "og:locality",
+    content: "Taiwan"
+  },{
+    property: "og:country-name",
+    content: "Taiwan"
+}] %>
+<% for(var i = 0; i<og.length; i++){ %>
+  <meta property="<%= og[i].property %>" content="<%= og[i].content %>" />
+<% } %>
+<title>SITENAME</title>
+<!-- FAV ICONS -->
+<%# MOBILE %>
+<%# include _head-smartphone-homescreen-setting %>
+<%# PC %>
+<link href="/images/favicon.png" rel="shortcut icon" type="image/x-icon" />
+
+<!-- GLOBAL CSS -->
+<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="css/vendor/font-awesome/css/font-awesome.min.css">
+<link rel="stylesheet" type="text/css" href="css/global.css"><!--2017_7_4_05_00-->

@@ -1,0 +1,112 @@
+<% var page = 'index' %>
+
+<!DOCTYPE html>
+<html lang="zh-tw">
+
+<head>
+<% include include/_head %>
+<!-- IN-PAGE CSS -->
+<!-- start specific_stylesheet -->
+<link rel="stylesheet" type="text/css" href="css/unit/index.css" />
+<style>
+
+</style>
+
+<!-- end specific_stylesheet -->
+</head>
+
+<body>
+
+<!-- 如果有登入 - 加一個CLASS: .is-login -->
+<div class="layout-container is-login">
+<!-- HEADER START -->
+<%# include include/_header %>
+<!-- HEADER END   -->
+
+<!-- CONTENT START -->
+<div id="layout-view" class="layout-view <%= page %>">
+<!-- start content -->
+<section class="section-index">
+	<h1 class="eventtitle"></h1>
+	<p>活動地點：<span class="address"></span></p>
+	<p><span class="spacenum"></span> SPACES</p>
+	<div class="inner-wrap">
+	倒 數
+	<div class="countnum">999</div>
+	天
+	</div>
+	<h2>最新消息</h2>
+	<ul class="news-list">
+		<li class="news-item">
+			<h3 class="news-title"></h3>
+			<p class="news-date"></p>
+			<p class="news-content"></p>
+		</li>
+	</ul>
+</section>
+
+
+<!-- end content -->
+<!-- <div class="btn-backtop is-hide"></div> -->
+</div>
+<!-- CONTENT END   -->
+
+<!-- FOOTER START -->
+<% include include/_footer %>
+<!-- FOOTER END   -->
+</div>
+
+<!-- GLOBAL JS START -->
+<% include include/_js %>
+<!-- GLOBAL JS END   -->
+<!-- IN-PAGE JS START -->
+<!-- start specific_javascript -->
+<script>
+function daysBetween(startDate, endDate) {
+    var millisecondsPerDay = 24 * 60 * 60 * 1000;
+    return (treatAsUTC(endDate) - treatAsUTC(startDate)) / millisecondsPerDay;
+}
+var eventInfo = {};
+$.getJSON("https://spreadsheets.google.com/feeds/list/1bOeYGqGotQ16RKNQyYMxMKJxlc-vDs8Imo67j_gJjVs/od6/public/values?alt=json",function(data){
+    console.log(data.feed.entry[0]);
+    eventInfo.address = data.feed.entry[0].gsx$address.$t;
+    eventInfo.eventname = data.feed.entry[0].gsx$eventname.$t;
+    eventInfo.eventdate = data.feed.entry[0].gsx$eventdate.$t.split("/");
+    eventInfo.spacenum = data.feed.entry[0].gsx$spacenum.$t;
+}).always(function(){
+	console.log(eventInfo);
+	var today = new Date();
+	var eventday = new Date(eventInfo.eventdate[0],eventInfo.eventdate[1] - 1,eventInfo.eventdate[2]);
+	console.log(daysBetween(today, eventday));
+	$(".eventtitle").text(eventInfo.eventname);
+	$(".spacenum").text(eventInfo.spacenum);
+	$(".address").text(eventInfo.address);
+	$(".countnum").text( parseInt(daysBetween(today, eventday)) );
+});
+var newsList = [];
+$.getJSON("https://spreadsheets.google.com/feeds/list/1bOeYGqGotQ16RKNQyYMxMKJxlc-vDs8Imo67j_gJjVs/2/public/values?alt=json",function(data){
+    console.log(data.feed.entry); //each entry 可取值
+	$.each( data.feed.entry , function(index, el) {
+		newsList.push({});
+		newsList[index].date = el.gsx$date;
+		newsList[index].title = el.gsx$title;
+		newsList[index].content = el.gsx$content;
+	});
+	console.log(newsList);
+
+}).always(function(){
+	$(".news-title").text(newsList[ newsList.length - 1 ].title.$t)
+	$(".news-date").text(newsList[ newsList.length - 1 ].date.$t)
+	$(".news-content").text(newsList[ newsList.length - 1 ].content.$t)
+});
+
+(function() {
+
+})();
+
+</script>
+
+<!-- end specific_javascript -->
+<!-- IN-PAGE JS END -->
+</body>
+</html><!--2017_7_4_05_00-->

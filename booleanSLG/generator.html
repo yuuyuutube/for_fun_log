@@ -1,0 +1,632 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-tw">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0" />
+<meta name="title" content="boolean SLG player" />
+<meta name="Author" content="" />
+<meta name="Description" content="SITE_DESCRIPTION" />
+
+
+  <meta property="og:title" content="boolean SLG player" />
+
+  <meta property="og:type" content="website" />
+
+  <meta property="og:url" content="" />
+
+  <meta property="og:image" content="img/share1200x630.jpg" />
+
+  <meta property="og:site_name" content="boolean SLG player" />
+
+  <meta property="og:description" content="SITE_DESCRIPTION" />
+
+  <meta property="og:locality" content="Taiwan" />
+
+  <meta property="og:country-name" content="Taiwan" />
+
+<title>boolean SLG player</title>
+<!-- FAV ICONS -->
+
+
+
+<link href="img/jc_logo.ico" rel="shortcut icon" type="image/x-icon" />
+
+<!-- GLOBAL CSS -->
+<link rel="stylesheet" type="text/css" href="css/vendor/font-awesome/css/font-awesome.min.css">
+<link rel="stylesheet" type="text/css" href="css/global.css">
+<!-- Global Site Tag (gtag.js) - Google Analytics -->
+<!-- start specific_stylesheet -->
+<link rel="stylesheet" type="text/css" href="css/unit/generator.css" />
+
+<!-- end specific_stylesheet -->
+</head>
+
+<body>
+          
+<div class="layout-container">
+
+
+<div id="layout-view" class="layout-view index">
+<!-- start content -->
+<form id="app">
+	<div class="clearfix wrap-topbtn" v-cloak>
+		<div class="btn btn-prev" v-if="step>0" v-on:click="step--"><i class="fa fa-angle-left" aria-hidden="true"></i>PREV STEP</div>
+		<div class="btn btn-next style-cta" v-if="step<4 && step>(-1)" v-on:click="step++">NEXT STEP<i class="fa fa-angle-right" aria-hidden="true"></i></div>
+	</div>
+	<div class="step" id="step-1" v-if="step==(-1)">
+		<h2>Source</h2>
+		<div class="inner">
+			<a class="btn" v-on:click="showSource=!showSource">讀取腳本<i v-bind:class="[showSource ? 'fa fa-angle-up' : 'fa fa-angle-down']" aria-hidden="true"></i></a>
+			<div v-if="showSource" v-cloak>
+				<textarea name="source" id="source" width="100%" rows="10" v-model="source" v-on:click="selectSelf" title="腳本內容" required></textarea>
+				<p>請貼入腳本內容</p>
+			</div>
+			<p><br><br><a href="https://docs.google.com/document/d/19MmmHPsJQHFxVCcUFhLhCjy-o71LFyeC_sfS1yeNKvA/edit" target="_blank">文件說明</a></p>
+			<div class="btn style-cta" v-on:click="readSource()">START<i class="fa fa-angle-right" aria-hidden="true"></i></div>
+		</div>
+	</div>
+	<div class="step" id="step0" v-if="step==0" v-cloak>
+		<div class="helper">
+			破關條件：達<input type="number" pattern="[0-9]*" min="1" max="9999" v-bind:value="scenario.endScore" v-on:input="scenario.endScore = parseInt($event.target.value)" title="破關分數" required>分
+		</div>
+		<div class="roles">
+			<h2>Role</h2>
+			<div class="role" v-for="(r,index) in scenario.role">
+				<div class="inner">
+					<p>角色編號：{{index}}</p>
+					角色名稱：<input type="text" v-model="scenario.role[index]" title="角色名稱">
+					<p>img path：role/{{index}}.jpg</p>
+					<div class="wrap-btn">
+						<a class="btn" v-if="index>0" v-on:click="delRole(index)">刪除角色</a>
+						<a class="btn style-cta" v-if="index == scenario.role.length-1" v-on:click="addRole()">增加角色</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="step" id="step1" v-if="step==1" v-cloak>
+		<div class="helper">
+			<p v-for="(r,index) in scenario.role">角色 {{index}}：{{scenario.role[index]}}</p>
+		</div>
+
+		<h2>Ending</h2>
+
+		<div class="endings">
+			<div class="ending" v-for="(r,index) in scenario.endEvent">
+				<div class="inner">
+					<p>結局編號：{{index}}</p>
+					結局名稱：<input type="text" v-model="scenario.endEvent[index].name" title="結局名稱">
+					<p>img path：ending/{{index}}.jpg</p>
+					<div class="inner" v-for="(t,j) in r.lyric">
+						角色<input type="number" pattern="[0-9]*" v-bind:max="scenario.role.length-1" min="0" v-bind:value="scenario.endEvent[index].role[j]" v-on:input="scenario.endEvent[index].role[j] = parseInt($event.target.value)" title="角色編號" required>：對白<input type="text" v-model="scenario.endEvent[index].lyric[j]" title="對白" required>
+						<div class="wrap-btn">
+							<a class="btn" v-if="j>0" v-on:click="delEndingLyric(index,j)">刪除對白</a>
+							<a class="btn style-cta" v-if="j == scenario.endEvent[index].lyric.length-1" v-on:click="addEndingLyric(index)">增加對白</a>
+						</div>
+					</div>
+					<div class="wrap-btn">
+						<a class="btn" v-if="index>0" v-on:click="delEnd(index)">刪除結局{{index}}</a>
+						<a class="btn style-cta" v-if="index == scenario.endEvent.length-1" v-on:click="addEnd()">增加結局</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<div class="step" id="step2" v-if="step==2" v-cloak>
+		<div class="helper">
+			<p v-for="(r,index) in scenario.role">角色 {{index}}：{{scenario.role[index]}}</p>
+		</div>
+
+		<h2>Tutorial</h2>
+		<div class="tutorial">
+			<div class="inner">
+				<p>img tutorial/0.jpg</p>
+				<div class="inner" v-for="(t,i) in scenario.tutorial.lyric">
+					角色<input type="number" pattern="[0-9]*" v-bind:max="scenario.role.length-1" min="0" v-bind:value="scenario.tutorial.role[i]" v-on:input="scenario.tutorial.role[i] = parseInt($event.target.value)" title="角色編號" required>：對白<input type="text" v-model="scenario.tutorial.lyric[i]" title="對白" required>
+					<div class="wrap-btn">
+						<a class="btn" v-if="i>0" v-on:click="delTutorialLyric(i)">刪除對白</a>
+						<a class="btn style-cta" v-if="i == scenario.tutorial.lyric.length-1" v-on:click="addTutorialLyric()">增加對白</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<div class="step" id="step3" v-if="step==3" v-cloak>
+		<div class="helper">
+			<p v-for="(r,index) in scenario.role">角色 {{index}}：{{scenario.role[index]}}</p>
+			<p v-for="(r,index) in scenario.endEvent">結局 {{index}}：{{scenario.endEvent[index].name}}</p>
+		</div>
+
+		<h2>Event</h2>
+
+		<div class="events">
+			<div class="event" v-for="(e,index) in scenario.event">
+				<div class="inner">
+					<p>事件編號：{{index}}</p>
+					<p>是否只能觸發一次：(尚未實裝)</p>
+					<p>是否只能由特定事件觸發：(尚未實裝)</p>
+					<div class="inner" v-for="(t,j) in e.lyric">
+						<!-- 對白 -->
+						角色<input type="number" pattern="[0-9]*" v-bind:max="scenario.role.length-1" min="0" v-bind:value="scenario.event[index].role[j]" v-on:input="scenario.event[index].role[j] = parseInt($event.target.value)" title="角色編號" required>：對白<input type="text" v-model="scenario.event[index].lyric[j]" title="對白" required>
+						<div class="wrap-btn">
+							<a class="btn" v-if="j>0" v-on:click="delEventLyric(index,j)">刪除對白</a>
+							<a class="btn style-cta" v-if="j == scenario.event[index].lyric.length-1" v-on:click="addEventLyric(index)">增加對白</a>
+						</div>
+					</div>
+					YES選項文字：<input type="text" v-model="scenario.event[index].trueAction.option" title="YES選項文字">
+					<br>
+					YES選擇後反應： (允許負分)
+					<div class="inner" v-for="(s,j) in e.trueAction.score">
+						END<input type="number" pattern="[0-9]*" v-bind:max="scenario.endEvent.length-1" min="0" v-bind:value="scenario.event[index].trueAction.score[j][0]" v-on:input="scenario.event[index].trueAction.score[j][0] = parseInt($event.target.value)" title="結局編號" required> + <input type="number" pattern="[0-9]*" v-bind:value="scenario.event[index].trueAction.score[j][1]" v-on:input="scenario.event[index].trueAction.score[j][1] = parseInt($event.target.value)" v-bind:min="scenario.endScore*(-1)" v-bind:max="scenario.endScore" title="加減分數" required>分
+						<div class="wrap-btn">
+							<a class="btn" v-if="j>0" v-on:click="delEventTrueAction(index,j)">刪除算式</a>
+							<a class="btn style-cta" v-if="j == scenario.event[index].trueAction.score.length-1" v-on:click="addEventTrueAction(index)">增加算式</a>
+						</div>
+					</div>
+					YES選擇後強制觸發：(尚未實裝)<br><br>
+
+					NO選項文字：<input type="text" v-model="scenario.event[index].falseAction.option" title="NO選項文字">
+					<br>
+					NO選擇後反應： (允許負分)
+					<div class="inner" v-for="(s,j) in e.falseAction.score">
+						END<input type="number" pattern="[0-9]*" v-bind:max="scenario.endEvent.length-1" min="0" v-bind:value="scenario.event[index].falseAction.score[j][0]" v-on:input="scenario.event[index].falseAction.score[j][0] = parseInt($event.target.value)" title="結局編號" required> + <input type="number" pattern="[0-9]*" v-bind:value="scenario.event[index].falseAction.score[j][1]" v-on:input="scenario.event[index].falseAction.score[j][1] = parseInt($event.target.value)" v-bind:min="scenario.endScore*(-1)" v-bind:max="scenario.endScore" title="加減分數" required>分
+						<div class="wrap-btn">
+							<a class="btn" v-if="j>0" v-on:click="delEventFalseAction(index,j)">刪除算式</a>
+							<a class="btn style-cta" v-if="j == scenario.event[index].falseAction.score.length-1" v-on:click="addEventFalseAction(index)">增加算式</a>
+						</div>
+					</div>
+					NO選擇後強制觸發：(尚未實裝)<br><br>
+
+					<div class="wrap-btn">
+						<a class="btn" v-if="index>0" v-on:click="delEvent(index)">刪除事件{{index}}</a>
+						<a class="btn style-cta" v-if="index == scenario.event.length-1" v-on:click="addEvent()">增加事件</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<div class="step" id="step4" v-if="step==4" v-cloak>
+		<div class="inner">
+			<h2>Result (請全選另存成txt)</h2>
+			<textarea name="result" id="result" width="100%" rows="10" v-on:click="selectSelf">{{result}}</textarea>
+			<p><br><br><a href="player.html">前往 → 預覽器</a></p>
+		</div>
+	</div>
+</form>
+
+<!-- end content -->
+</div>
+
+
+</div>
+
+<!-- JS LIBRARY -->
+<script type="text/javascript" src="js/vendor/fastclick.js"></script>
+<script type="text/javascript" src="js/vendor/svg4everybody.min.js"></script>
+<!-- GLOBAL JS -->
+<!-- <script type="text/javascript" src="js/initialization.js"></script> -->
+<!-- start specific_javascript -->
+<script src="https://unpkg.com/vue"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/1.3.4/vue-resource.js"></script>
+<script>
+	var t = {
+  "tutorial": {
+    "role": [
+      0,
+      0,
+      5
+    ],
+    "lyric": [
+      "喵喵...(走來走去",
+      "喵喵喵...(抓門",
+      "MAJAJA"
+    ]
+  },
+  "role": [
+    "駱一鍋",
+    "費渡",
+    "駱聞舟",
+    "阿檸",
+    "哈老師",
+    "路過的社畜"
+  ],
+  "endScore": 10,
+  "event": [
+    {
+      "isAvalible": true,
+      "isOnce": false,
+      "specificRef": null,
+      "role": [
+        "2"
+      ],
+      "lyric": [
+        "今天這麼有興致搭火車？"
+      ],
+      "trueAction": {
+        "option": "yes",
+        "score": [
+          [
+            0,
+            3
+          ]
+        ],
+        "forceTo": null
+      },
+      "falseAction": {
+        "option": "no...",
+        "score": [
+          [
+            0,
+            0
+          ]
+        ],
+        "forceTo": null
+      }
+    },
+    {
+      "isAvalible": true,
+      "isOnce": false,
+      "specificRef": null,
+      "role": [
+        "3"
+      ],
+      "lyric": [
+        "請問有空房間嗎？"
+      ],
+      "trueAction": {
+        "option": "yes",
+        "score": [
+          [
+            0,
+            3
+          ]
+        ],
+        "forceTo": null
+      },
+      "falseAction": {
+        "option": "no...",
+        "score": [
+          [
+            0,
+            0
+          ]
+        ],
+        "forceTo": null
+      }
+    },
+    {
+      "isAvalible": true,
+      "isOnce": false,
+      "specificRef": null,
+      "role": [
+        "0"
+      ],
+      "lyric": [
+        "我不會讓你離開的！"
+      ],
+      "trueAction": {
+        "option": "yes",
+        "score": [
+          [
+            1,
+            5
+          ]
+        ],
+        "forceTo": null
+      },
+      "falseAction": {
+        "option": "no...",
+        "score": [
+          [
+            0,
+            0
+          ]
+        ],
+        "forceTo": null
+      }
+    },
+    {
+      "isAvalible": true,
+      "isOnce": false,
+      "specificRef": null,
+      "role": [
+        1,
+        1,
+        4
+      ],
+      "lyric": [
+        "老師，",
+        "請問孩子的爸有記得幫他帶譜嗎？",
+        "(回訊息中...)"
+      ],
+      "trueAction": {
+        "option": "有呀",
+        "score": [
+          [
+            0,
+            2
+          ]
+        ],
+        "forceTo": null
+      },
+      "falseAction": {
+        "option": "沒有耶...",
+        "score": [
+          [
+            2,
+            5
+          ]
+        ],
+        "forceTo": null
+      }
+    },
+    {
+      "isAvalible": true,
+      "isOnce": false,
+      "specificRef": null,
+      "role": [
+        5,
+        5,
+        5,
+        2
+      ],
+      "lyric": [
+        "這位警察，",
+        "我這裡有一個創業的機會，",
+        "有興趣嗎",
+        "唔..."
+      ],
+      "trueAction": {
+        "option": "好哇",
+        "score": [
+          [
+            2,
+            10
+          ]
+        ],
+        "forceTo": null
+      },
+      "falseAction": {
+        "option": "我考慮看看",
+        "score": [
+          [
+            0,
+            1
+          ]
+        ],
+        "forceTo": null
+      }
+    }
+  ],
+  "endEvent": [
+    {
+      "name": "舟渡HE",
+      "role": [
+        1,
+        2,
+        1,
+        2,
+        3
+      ],
+      "lyric": [
+        "你…",
+        "這麼晚？費總今天又去哪開心了？",
+        "一直待在師兄這呢。(摸駱聞舟胸口",
+        "摸哪呢？別亂來。",
+        "我也要摸"
+      ]
+    },
+    {
+      "name": "舟渡BE",
+      "role": [
+        2,
+        1,
+        2,
+        1,
+        1,
+        3
+      ],
+      "lyric": [
+        "費渡，我以為你能相信我的…",
+        "師兄…我…",
+        "你擔心心裡那頭「怪物」嗎？你想毀了自己？",
+        "……",
+        "師兄…我想要你…",
+        "我也要"
+      ]
+    },
+    {
+      "name": "阿檸HE",
+      "role": [
+        2,
+        3,
+        3
+      ],
+      "lyric": [
+        "主人...請享用",
+        "摸摸茶最高",
+        "(掐大奶)"
+      ]
+    }
+  ]
+};
+
+	var t_end = {
+		"name": "end_name",
+		"role": [
+		0,
+		0,
+		0
+		],
+		"lyric": [
+		"end0 lyric0",
+		"end0 lyric1",
+		"end0 lyric2"
+		]
+	};
+	var t_event = {
+		"isAvalible": true,
+		"isOnce": false,
+		"specificRef": null,
+		"role": [
+		0,
+		0
+		],
+		"lyric": [
+		"text...",
+		"text..."
+		],
+		"trueAction": {
+			"option": "yes",
+			"score": [
+			[
+			0,
+			1
+			],
+			[
+			1,
+			1
+			]
+			],
+			"forceTo": null
+		},
+		"falseAction": {
+			"option": "no...",
+			"score": [
+			[
+			0,
+			2
+			]
+			],
+			"forceTo": null
+		}
+	};
+
+	var app = new Vue({
+		el: '#app',
+		data: {
+			scenario: t,
+			source: '',
+			result: '',
+			showSource: false,
+			step: -1,
+		},
+		mounted: function() {
+			this.source = JSON.stringify(t,null,'');
+			this.result = JSON.stringify(this.scenario,null,'');
+		},
+		updated: function() {
+			var inputArray = document.getElementsByTagName("input");
+			console.log('view updated')
+			this.result = JSON.stringify(this.scenario,null,'');
+			// document.getElementsByClassName("error").remove();
+			for (var i = document.getElementsByClassName("error").length - 1; i >= 0; i--) {
+				document.getElementsByClassName("error")[i].remove();
+			}
+			for (var i = 0; i < inputArray.length; i++) {
+				var node = document.createElement("P");// Create a <p> node
+				var nodename = inputArray[i].getAttribute("title");
+				var textnode = document.createTextNode(inputArray[i].validationMessage);// Create a text node
+
+				if( !(inputArray[i].validationMessage.length == '') ){
+					textnode = document.createTextNode(nodename+" - "+inputArray[i].validationMessage);
+				}
+
+				node.className = "error";
+				node.appendChild(textnode);  
+				inputArray[i].parentElement.appendChild(node);
+				// console.log(inputArray[i].validationMessage);
+				// console.log(inputArray[i].validationMessage == "");
+			}
+		},
+		methods: {
+			readSource: function(){
+				this.scenario = JSON.parse(this.source);
+				this.step = 0;
+				this.$forceUpdate();
+			},
+			addRole: function(){
+				this.scenario.role.push('role_name');
+			},
+			delRole: function(i){
+				this.scenario.role.splice(i,1);
+			},
+			addEnd: function(){
+				this.scenario.endEvent.push(t_end);
+			},
+			delEnd: function(i){
+				this.scenario.endEvent.splice(i,1);
+			},
+			addEndingLyric: function(i){
+				this.scenario.endEvent[i].lyric.push('text here...');
+				this.scenario.endEvent[i].role.push(0);
+			},
+			delEndingLyric: function(i,j){
+				this.scenario.endEvent[i].lyric.splice(j,1);
+				this.scenario.endEvent[i].role.splice(j,1);
+			},
+			addTutorialLyric: function(){
+				this.scenario.tutorial.lyric.push('text here...');
+				this.scenario.tutorial.role.push(0);
+			},
+			delTutorialLyric: function(i){
+				this.scenario.tutorial.lyric.splice(i,1);
+				this.scenario.tutorial.role.splice(i,1);
+			},
+			addEvent: function(){
+				this.scenario.event.push(t_event);
+			},
+			delEvent: function(i){
+				this.scenario.event.splice(i,1);
+			},
+			addEventTrueAction: function(i){
+				// console.log(this.scenario.event[i].trueAction.score);
+				this.scenario.event[i].trueAction.score.push([0,0]);
+				this.$forceUpdate();
+			},
+			delEventTrueAction: function(i,j){
+				this.scenario.event[i].trueAction.score.splice(j,1);
+				this.$forceUpdate();
+			},
+			addEventLyric: function(i){
+				this.scenario.event[i].lyric.push("text...");
+				this.scenario.event[i].role.push(0);
+				this.$forceUpdate();
+			},
+			delEventLyric: function(i,j){
+				this.scenario.event[i].role.splice(j,1);
+				this.scenario.event[i].lyric.splice(j,1);
+				this.$forceUpdate();
+			},
+			addEventFalseAction: function(i){
+				this.scenario.event[i].falseAction.score.push([0,0]);
+				this.$forceUpdate();
+			},
+			delEventFalseAction: function(i,j){
+				this.scenario.event[i].falseAction.score.splice(j,1);
+				this.$forceUpdate();
+			},
+			selectSelf: function(e){
+				// console.log(e.target);
+				e.target.select();
+			}
+		}
+	});
+</script>
+
+<!-- end specific_javascript -->
+</body>
+</html>

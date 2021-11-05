@@ -1,0 +1,92 @@
+<% var nav = [
+{
+	name: "首 頁",
+	url: "index.html",
+	item:[]
+},{
+	name: "服務說明",
+	url: "introduce.html",
+	item:[]
+},{
+	name: "服務據點",
+	url: "store.html",
+	item:[]
+},{
+	name: "鏡頭租借",
+	url: "manual.html",
+	item:[]
+},{
+	name: "會員服務",
+	url: "",
+	item:[
+	{
+		name: "變更會員資料",
+		url: "profile.html"
+	},
+	{
+		name: "租借紀錄查詢",
+		url: "orderlist.html"
+	}		
+	]
+}
+] %>
+
+<header id="header">
+	<% if ( page == "index" ) { %>
+	<div class="inner-wrap">
+
+		<a class="header-logo" href="#"><img src="img/logo-sony.png" alt=""></a>
+		<nav class="header-nav on-desk">
+			<ul class="header-nav-list">
+				<% for(var i = 0; i<nav.length; i++){ %>
+				<li class="header-nav-item">
+					<a <% if ( nav[i].url != "" ) { %>href="<%= nav[i].url %>"<% } %> ><%= nav[i].name %></a>
+					<% if ( nav[i].item != "" ) { %>
+					<ul class="header-subnav-list">
+						<% for(var j = 0; j<nav[i].item.length; j++){ %>
+						<li class="header-subnav-item"><a href="<%=nav[i].item[j].url%>"><%=nav[i].item[j].name%></a></li>
+						<% } %>
+					</ul>
+					<% } %>
+				</li>
+				<% } %>
+			</ul>
+		</nav>
+		<div class="btn-hamburger on-mobile">
+			<i class="icon-hamburger">
+				<i></i>
+				<i></i>
+				<i></i>
+			</i>
+		</div>
+
+	</div>
+	<% } %>
+</header>
+
+<% if ( page == "index" ) { %>
+<div class="header-menu on-mobile">
+	<ul class="menu-wrap clearfix">
+		<% for(var i = 0; i<nav.length; i++){ %>
+		<li class="header-menu-item" data-pid="<%=(i+1)%>">
+			<a <% if ( nav[i].url != "" ) { %>href="<%= nav[i].url %>"<% } %> >
+				<%= nav[i].name %>
+			</a>
+			<% if ( nav[i].item != "" ) { %>
+			<ul>
+				<% for(var j = 0; j<nav[i].item.length; j++){ %>
+				<li><a href="<%=nav[i].item[j].url%>"><%=nav[i].item[j].name%></a></li>
+				<% } %>
+			</ul>
+			<% } %>
+		</li>
+		<% } %>
+	</ul>
+	<div class="btn-wrap">
+		<a href="#" class="style-btn">登出</a>
+	</div>
+	
+	<div class="header-overlap"></div>
+
+</div>
+<% } %><!--2017_7_4_05_00-->

@@ -1,0 +1,95 @@
+<% var page = 'camera' %>
+
+<!DOCTYPE html>
+<html lang="zh-tw">
+
+<head>
+<% include include/_head %>
+<!-- IN-PAGE CSS -->
+<!-- start specific_stylesheet -->
+<link rel="stylesheet" type="text/css" href="css/unit/camera.css" />
+
+<!-- end specific_stylesheet -->
+</head>
+
+<body>
+
+<!-- 如果有登入 - 加一個CLASS: .is-login -->
+<div class="layout-container is-login">
+<!-- HEADER START -->
+<%# include include/_header %>
+<!-- HEADER END   -->
+
+<!-- CONTENT START -->
+<div id="layout-view" class="layout-view <%= page %>">
+<!-- start content -->
+<section class="section-camera">
+	<div class="inner">
+		<div class="square">
+			<p class="msg">點擊選擇您的照片或拍照</p>
+			<input type="file" class="btn-choosefile" id="btn-choosefile" />
+		</div>
+	</div>
+</section>
+
+
+<!-- end content -->
+<!-- <div class="btn-backtop is-hide"></div> -->
+</div>
+<!-- CONTENT END   -->
+
+<!-- FOOTER START -->
+<% include include/_footer %>
+<!-- FOOTER END   -->
+</div>
+
+<!-- GLOBAL JS START -->
+<% include include/_js %>
+<!-- GLOBAL JS END   -->
+<!-- IN-PAGE JS START -->
+<!-- start specific_javascript -->
+<!-- <script src="js/unit/camera.js"></script> -->
+<script>
+//convert to base 64
+File.prototype.convertToBase64 = function(callback){
+	var reader = new FileReader();
+	reader.onload = function(e) {
+		callback(e.target.result)
+	};
+	reader.onerror = function(e) {
+		callback(null, e);
+	};        
+	reader.readAsDataURL(this);
+};
+
+function getImgSize(myTarget){
+	var start_x = 0;
+	var start_y = 0;
+	var size_sq = 0;
+	var img_w = $(myTarget).width();
+	var img_h = $(myTarget).height();
+	if (img_w > img_h ){//橫
+		start_x = (img_w - img_h ) / 2;
+	}else{ //直
+		start_y = (img_h - img_w ) / 2;
+	}
+	size_sq = img_w < img_h ? img_w : img_h ;
+	return [start_x,start_y,size_sq];
+}
+$("body").find('#btn-choosefile').on('change', function(event) {
+	event.preventDefault();
+	var selectedFile = this.files[0];
+	var img_size,img_crop_coordinate;
+	var img_src = URL.createObjectURL(event.target.files[0]);
+	$(".msg,.btn-choosefile").addClass('is-hide');
+	$(".square").attr("style","background-image: url("+img_src+")").delay(100).queue(function() {
+		$(this).addClass('yama')
+		$(this).dequeue();
+	});
+});
+</script>
+
+<!-- end specific_javascript -->
+<!-- IN-PAGE JS END -->
+</body>
+</html><!--2017_7_5_03_54-->

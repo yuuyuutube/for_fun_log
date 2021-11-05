@@ -1,0 +1,229 @@
+{
+  "tutorialLyric": [
+    "你是當今武林盟的盟主，",
+    "然而卻不慎引發了血契，性命垂危，",
+    "自此開始，你的每個選擇將會關係到你的生命..."
+  ],
+  "role": [
+    "道長",
+    "魔教教主",
+    "魔教左護法",
+    "魔教右護法",
+    "朝廷捕快",
+    "飛賊",
+    "紈褲師弟"
+  ],
+  "event": [
+    {
+      "specificRef": null,
+      "isAvalible": true,
+      "showRole": 1,
+      "lyric": [
+        "你的血契是由淫心蠱所導致，",
+        "須得每四個時辰與我雙修一回，維持蠱蟲活性，方可不死。"
+      ],
+      "trueAction": {
+        "option": "立刻洞房",
+        "score": [
+          0,
+          2,
+          0
+        ],
+        "lyric": [
+          "lyric 1"
+        ],
+        "forceTo": null
+      },
+      "falseAction": {
+        "option": "胡說八道",
+        "score": [
+          1,
+          0,
+          2
+        ],
+        "lyric": [
+          "lyric 1"
+        ],
+        "forceTo": null
+      },
+      "isOnce": false
+    },
+    {
+      "specificRef": null,
+      "isAvalible": true,
+      "showRole": 2,
+      "lyric": [
+        "這位大俠，在下有一事相求，",
+        "本教教主邀請您前往本教，欲與您一同商議武林大事。"
+      ],
+      "trueAction": {
+        "option": "同意",
+        "score": [
+          0,
+          1,
+          0
+        ],
+        "lyric": [
+          "lyric 1"
+        ],
+        "forceTo": null
+      },
+      "falseAction": {
+        "option": "婉謝",
+        "score": [
+          1,
+          0,
+          1
+        ],
+        "lyric": [
+          "lyric 1"
+        ],
+        "forceTo": null
+      },
+      "isOnce": false
+    },
+    {
+      "specificRef": null,
+      "isAvalible": true,
+      "showRole": 3,
+      "lyric": [
+        "（擋住去路）",
+        "請您隨我前來本教一趟。"
+      ],
+      "trueAction": {
+        "option": "樂意之至",
+        "score": [
+          -1,
+          2,
+          0
+        ],
+        "lyric": [
+          "lyric 1"
+        ],
+        "forceTo": null
+      },
+      "falseAction": {
+        "option": "擋路者死",
+        "score": [
+          0,
+          0,
+          2
+        ],
+        "lyric": [
+          "lyric 1"
+        ],
+        "forceTo": null
+      },
+      "isOnce": false
+    },
+    {
+      "specificRef": null,
+      "isAvalible": true,
+      "showRole": 0,
+      "lyric": [
+        "盟主，你氣血阻滯，需交合而通暢，",
+        "我即是道，道即是我，莫要擔心。"
+      ],
+      "trueAction": {
+        "option": "（脫衣服）",
+        "score": [
+          3,
+          -1,
+          0
+        ],
+        "lyric": [
+          "lyric 1"
+        ],
+        "forceTo": null
+      },
+      "falseAction": {
+        "option": "恐怕不妥",
+        "score": [
+          0,
+          1,
+          0
+        ],
+        "lyric": [
+          "lyric 1"
+        ],
+        "forceTo": null
+      },
+      "isOnce": false
+    },
+    {
+      "specificRef": null,
+      "isAvalible": true,
+      "showRole": 0,
+      "lyric": [
+        "脫衣服。"
+      ],
+      "trueAction": {
+        "option": "道長，快點進來...",
+        "score": [
+          4,
+          -1,
+          0
+        ],
+        "lyric": [
+          "lyric 1"
+        ],
+        "forceTo": null
+      },
+      "falseAction": {
+        "option": "不知羞恥！",
+        "score": [
+          -1,
+          1,
+          0
+        ],
+        "lyric": [
+          "lyric 1"
+        ],
+        "forceTo": null
+      },
+      "isOnce": false
+    }
+  ],
+  "endScore": 10,
+  "endEvent": [
+    {
+      "name": "道長HE",
+      "showRole": [
+        0,
+        0,
+        0
+      ],
+      "lyric": [
+        "end0 lyric0",
+        "end0 lyric1",
+        "end0 lyric2"
+      ]
+    },
+    {
+      "name": "教主HE",
+      "showRole": [
+        1,
+        2,
+        3
+      ],
+      "lyric": [
+        "end1 lyric0",
+        "end1 lyric1",
+        "end1 lyric2"
+      ]
+    },
+    {
+      "name": "教主BE",
+      "showRole": [
+        3,
+        2,
+        1
+      ],
+      "lyric": [
+        "end2 lyric0",
+        "end2 lyric1",
+        "end2 lyric2"
+      ]
+    }
+  ]
+}

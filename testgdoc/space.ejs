@@ -1,0 +1,140 @@
+<% var page = 'space' %>
+
+<!DOCTYPE html>
+<html lang="zh-tw">
+
+<head>
+<% include include/_head %>
+<!-- IN-PAGE CSS -->
+<!-- start specific_stylesheet -->
+<link rel="stylesheet" type="text/css" href="css/unit/space.css" />
+
+<!-- end specific_stylesheet -->
+</head>
+
+<body>
+
+<!-- 如果有登入 - 加一個CLASS: .is-login -->
+<div class="layout-container is-login">
+<!-- HEADER START -->
+<%# include include/_header %>
+<!-- HEADER END   -->
+
+<!-- CONTENT START -->
+<div id="layout-view" class="layout-view <%= page %>">
+<!-- start content -->
+<section class="section-space">
+<h1>社團一覽</h1>
+<!-- <iframe src="https://docs.google.com/spreadsheets/d/1bOeYGqGotQ16RKNQyYMxMKJxlc-vDs8Imo67j_gJjVs/pub?output=csv" frameborder="0"></iframe> -->
+<ul class="circle-list">
+</ul>
+<div class="template-circle-list" style="display:none;">
+	<li class="circle-item" data-space="{SN}">
+		<p class="circle-sn">攤位號碼 {SN}</p>
+		<p class="circle-name">{SPACENAME}</p>
+		<p class="circle-author">{AUTHOR}</p>
+		<div class="goods-accordion" data-count="0">
+			<div class="bar">販售商品：</div>
+			<ul class="goods-wrap">
+				
+			</ul>
+		</div>
+	</li>
+</div>
+<div class="template-goods-list" style="display:none;">
+	<li class="goods-item">
+		<p class="tag">{TAG}</p>
+		<p class="pname">{PNAME}</p>
+		<p class="price">{PRICE}</p>
+		<p class="author">作者: {AUTHOR}</p>
+		<img src="{PIMG}" alt="">
+
+		<p class="pinfo">{PINFO}</p>
+	</li>
+</div>
+</section>
+
+
+<!-- end content -->
+<!-- <div class="btn-backtop is-hide"></div> -->
+</div>
+<!-- CONTENT END   -->
+
+<!-- FOOTER START -->
+<% include include/_footer %>
+<!-- FOOTER END   -->
+</div>
+
+<!-- GLOBAL JS START -->
+<% include include/_js %>
+<!-- GLOBAL JS END   -->
+<!-- IN-PAGE JS START -->
+<!-- start specific_javascript -->
+<script type="text/javascript">
+var circleList = [];
+var goodsList = [];
+var t_circle = $(".template-circle-list").html();
+var t_goods = $(".template-goods-list").html();
+$(".template-circle-list").remove();
+$(".template-goods-list").remove();
+
+function circleTemplate( sn,spacename,author ){
+	return t_circle.replace( /\{+(SN)+\}/g , sn ).replace( "{SPACENAME}" , spacename ).replace( "{AUTHOR}" , author );
+}
+function goodsTemplate( tag,author,pinfo,pname,price,pimg ){
+	return t_goods.replace( "{PIMG}" , pimg ).replace( "{TAG}" , tag ).replace( "{AUTHOR}" , author ).replace( "{PINFO}" , pinfo ).replace( "{PNAME}" , pname ).replace( "{PRICE}" , price );
+}
+
+$.getJSON("https://spreadsheets.google.com/feeds/list/1bOeYGqGotQ16RKNQyYMxMKJxlc-vDs8Imo67j_gJjVs/3/public/values?alt=json",function(data){
+    console.log(data.feed.entry); //each entry 可取值
+	$.each( data.feed.entry , function(index, el) {
+		circleList.push({});
+		circleList[index].author = el.gsx$author.$t ? el.gsx$author.$t : "";
+		circleList[index].spacename = el.gsx$spacename.$t ? el.gsx$spacename.$t : "";
+		circleList[index].spacesn = el.gsx$spacesn.$t ? el.gsx$spacesn.$t : "";
+	});
+	console.log(circleList);
+
+}).always(function(){
+	$.each( circleList, function(index, el) {
+		$(".circle-list").append(circleTemplate( el.spacesn,el.spacename,el.author ))
+	});
+
+
+	//攤位商品
+	$.getJSON("https://spreadsheets.google.com/feeds/list/1bOeYGqGotQ16RKNQyYMxMKJxlc-vDs8Imo67j_gJjVs/4/public/values?alt=json",function(data){
+	    console.log(data.feed.entry); //each entry 可取值
+		$.each( data.feed.entry , function(index, el) {
+			var newGoods = {};
+			newGoods.author = el.gsx$author.$t ? el.gsx$author.$t : "";
+			newGoods.pimg = el.gsx$pimg.$t ? el.gsx$pimg.$t : "";
+			newGoods.pinfo = el.gsx$pinfo.$t ? el.gsx$pinfo.$t : "";
+			newGoods.pname = el.gsx$pname.$t ? el.gsx$pname.$t : "";
+			newGoods.price = el.gsx$price.$t ? ("NT. " + el.gsx$price.$t ) : "";
+			newGoods.spacesn = el.gsx$spacesn.$t ? el.gsx$spacesn.$t : "";
+			newGoods.tag = el.gsx$tag.$t ? el.gsx$tag.$t : "";
+			console.log(newGoods);
+			$(".circle-item[data-space="+newGoods.spacesn+"]").find(".goods-wrap").append( goodsTemplate( newGoods.tag,newGoods.author,newGoods.pinfo,newGoods.pname,newGoods.price,newGoods.pimg ) );
+			var nowcount = $(".circle-item[data-space="+newGoods.spacesn+"]").find(".goods-accordion").attr("data-count");
+			$(".circle-item[data-space="+newGoods.spacesn+"]").find(".goods-accordion").attr( "data-count", parseInt(nowcount)+1 );
+		});
+
+	}).always(function(){
+	});
+
+
+});
+
+
+
+(function() {
+	$("body").on('click', '.goods-accordion', function(event) {
+		$(this).toggleClass('is-open');
+	});
+})();
+</script>
+
+<!-- end specific_javascript -->
+<!-- IN-PAGE JS END -->
+</body>
+</html><!--2017_7_12_12_07-->

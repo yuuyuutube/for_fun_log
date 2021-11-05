@@ -1,0 +1,389 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-tw">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0" />
+<meta name="title" content="舟舟渡度 - boolean SLG player" />
+<meta name="Author" content="" />
+<meta name="Description" content="by 阿檸" />
+
+
+  <meta property="og:title" content="舟舟渡度 - boolean SLG player" />
+
+  <meta property="og:type" content="website" />
+
+  <meta property="og:url" content="" />
+
+  <meta property="og:image" content="img/share1200x630.jpg" />
+
+  <meta property="og:site_name" content="舟舟渡度 - boolean SLG player" />
+
+  <meta property="og:description" content="by 阿檸" />
+
+  <meta property="og:locality" content="Taiwan" />
+
+  <meta property="og:country-name" content="Taiwan" />
+
+<title>舟舟渡度 - boolean SLG player</title>
+<!-- FAV ICONS -->
+
+
+
+<link href="img/jc_logo.ico" rel="shortcut icon" type="image/x-icon" />
+
+<!-- GLOBAL CSS -->
+<link rel="stylesheet" type="text/css" href="css/vendor/font-awesome/css/font-awesome.min.css">
+<link rel="stylesheet" type="text/css" href="css/global.css">
+<!-- Global Site Tag (gtag.js) - Google Analytics -->
+<!-- start specific_stylesheet -->
+<link rel="stylesheet" type="text/css" href="css/unit/index.css" />
+
+<!-- end specific_stylesheet -->
+</head>
+
+<body>
+          
+<div class="layout-container">
+
+
+<div id="layout-view" class="layout-view index">
+<!-- start content -->
+<div id="app">
+
+	<div class="log" style="display:none;">
+		currentStep <b>{{currentStep}}</b>
+		<br>
+		prevEventIndex <b>{{prevEventIndex}}</b>
+		<br>
+		currentEventIndex <b>{{currentEventIndex}}</b>
+		<br>
+		currentLyricArray <b>{{currentLyricArray}}</b>
+		<br>
+		currentRoleArray <b>{{currentRoleArray}}</b>
+		<br>
+		currentLyricIndex <b>{{currentLyricIndex}}</b>
+		<br>
+		countScore <b>{{countScore}}</b>
+		<br>
+		log >> {{log}}
+	</div>
+	<div class="steps" v-cloak>
+		<div id="step0" class="step" v-if="currentStep == 0" v-on:click="initTutorial()">
+			<h2><a>press start</a></h2>
+		</div>
+		<div id="step1" class="step" v-if="currentStep == 1" v-on:click="runTutorial">
+			<h2>tutorial</h2>
+			<img src="https://dummyimage.com/300x300/ccc/ffffff&text=intro" alt="">
+			<div class="text">
+				<b class="role">{{currentRole}}</b>
+				<p>{{currentLyric}}</p>
+			</div>
+			<div class="option" v-if="currentLyricIndex < currentLyricArray.length - 1">NEXT</div>
+			<div class="option" v-if="currentLyricIndex == currentLyricArray.length - 1">OK</div>
+		</div>
+		<div class="step" id="step2" v-if="currentStep == 2">
+			<h2>GAME</h2>
+			<img v-bind:src="'https://dummyimage.com/300x300/ccc/ffffff&text=img'+currentRole" alt="">
+			<div class="text">
+				<b class="role">{{currentRole}}</b>
+				<p>{{currentLyric}}</p>
+			</div>
+			<div class="option option-true" v-if="currentLyricIndex < currentLyricArray.length - 1" v-on:click="runEvent">NEXT</div>
+			<div class="wrap-option">
+				<div class="option" v-if="currentLyricIndex == currentLyricArray.length - 1" v-on:click="select(true)">{{trueOption}}</div>
+				<div class="option" v-if="currentLyricIndex == currentLyricArray.length - 1" v-on:click="select(false)">{{falseOption}}</div>
+			</div>
+		</div>
+		<div class="step" id="step3" v-if="currentStep == 3" v-on:click="runEndEvent">
+			<h2>END {{currentEndIndex}} : {{scenario.endEvent[currentEndIndex].name}}</h2>
+			<img v-bind:src="'https://dummyimage.com/300x300/999/666666&text=end'+currentEndIndex" alt="">
+			<div class="text">
+				<b class="role">{{currentRole}}</b>
+				<p>{{currentLyric}}</p>
+			</div>
+			<div class="option option-true" v-if="currentLyricIndex < currentLyricArray.length - 1">NEXT</div>
+			<div class="option" v-if="currentLyricIndex == currentLyricArray.length - 1">GAME OVER</div>
+		</div>
+		<div class="step" id="step4" v-if="currentStep == 4" v-on:click="">
+			THANK YOU FOR PLAYING.
+		</div>
+		<div class="step" id="step404" v-if="currentStep == 404">
+			UNAVALIBLE URL.
+		</div>
+	</div>
+
+</div>
+
+<!-- end content -->
+</div>
+
+
+</div>
+
+<!-- JS LIBRARY -->
+<script type="text/javascript" src="js/vendor/fastclick.js"></script>
+<script type="text/javascript" src="js/vendor/svg4everybody.min.js"></script>
+<!-- GLOBAL JS -->
+<!-- <script type="text/javascript" src="js/initialization.js"></script> -->
+<!-- start specific_javascript -->
+<script src="https://unpkg.com/vue"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/1.3.4/vue-resource.js"></script>
+<script>
+//EX: pagename.html#a=xxx&b=yyy
+function searchToObject() {
+	var pairs = window.location.search.substring(1).split("&"),
+	obj = {},
+	pair,
+	i;
+
+	for ( i in pairs ) {
+		if ( pairs[i] === "" ) continue;
+
+		pair = pairs[i].split("=");
+		obj[ decodeURIComponent( pair[0] ) ] = decodeURIComponent( pair[1] );
+	}
+
+	return obj;
+}
+var searchObj = searchToObject();
+var gameId = searchObj.id ? searchObj.id : '';
+
+	// var hash_id = location.hash.substr(1);
+	var app = new Vue({
+		el: '#app',
+		data: {
+			currentStep: -1,
+			scenario: {},
+			currentEventIndex: -1,
+			prevEventIndex: -1,
+			currentRoleArray: [],
+			currentLyricArray: [],
+			currentLyricIndex: 0,
+			countScore : [],
+			trueOption: "Y",
+			falseOption: "N",
+			currentEndIndex: -1,
+			log: "",
+		},
+		computed: {
+			currentLyric: function(){
+				return this.currentLyricArray[this.currentLyricIndex];
+			},
+			currentRole: function(){
+				var roleIndex = this.currentRoleArray[this.currentLyricIndex];
+				return this.scenario.role[roleIndex];
+			}
+		},
+		watch: {
+			currentStep : function(){
+				console.log("currentStep Watched.");
+				this.log = "currentStep Watched.";
+			},
+			currentEventIndex : function(){
+				this.onChangeEvent();
+			}
+		},
+		mounted: function() {
+			this.getJsonInfo();
+			this.currentStep = 0;
+		},
+		updated: function() {
+		    console.log('view updated')
+		},
+		methods: {
+			getJsonInfo: function() {
+				this.$http.get('js/1.json').then(function(response){
+					console.log(response);
+					var resdata = response.body;
+					this.scenario = resdata;
+					// 依據 ending 數產生 array length
+					for (var i = 0 ; i < this.scenario.endEvent.length; i++) {
+						this.countScore[i] = 0;
+					}
+				}).catch(function(response){
+				// 捕捉異常
+				console.log(response);
+				this.currentStep = 404;
+			})
+			},
+			initTutorial: function(){
+				this.currentStep = 1;
+				// 寫入 lyric array, role array 至 current.
+				this.currentLyricArray = this.scenario.tutorial.lyric;
+				this.currentRoleArray = this.scenario.tutorial.role;
+				this.$forceUpdate();
+			},
+			runTutorial: function(){
+				// 跑對話
+				if(this.currentLyricIndex == this.currentLyricArray.length - 1 ){
+					this.endTutorial();
+				}else{
+					this.currentLyricIndex++;
+				}		
+			},
+			endTutorial: function(){
+				console.log("endTutorial - init game.");
+				//clear: role array, lyric array, lyric index
+				this.currentLyricIndex = 0;
+				this.currentLyricArray = [];
+				this.currentRoleArray = [];
+				this.$forceUpdate();
+				// 切畫面
+				this.dice();
+				this.currentStep = 2;
+			},
+			initEvent: function(index){
+				var ev = this.scenario.event[index];
+				this.currentLyricIndex = 0;
+				this.trueOption = ev.trueAction.option;
+				this.falseOption = ev.falseAction.option;
+				this.currentLyricArray = ev.lyric;
+				this.currentRoleArray = ev.role;
+				this.$forceUpdate();
+			},
+			dice: function(){
+				// 先檢查是否沒得骰了
+				for (var i = this.scenario.event.length - 1; i >= 0; i--) {
+					var ev = this.scenario.event[i];
+					var countAvalible = 0;
+					if ( (ev.specificRef == null || ev.specificRef == this.prevEvent ) && ev.isAvalible == true){
+						countAvalible++;
+						break;
+					}
+				}
+				// 若仍有則骰一個
+				if (countAvalible>0){
+					var eventCount = this.scenario.event.length;
+					var n = Math.floor(Math.random(eventCount)*eventCount);
+					var ev =this.scenario.event[n];
+					console.log(n);
+
+					if ( (ev.specificRef == null || ev.specificRef == this.prevEvent ) && ev.isAvalible == true){
+						console.log("passed");
+						this.log = "passed";
+						if( this.currentEventIndex == n){
+							// 骰到重複的
+							console.log("骰到重複的 - 不經watch手動放行");
+							this.prevEventIndex = this.currentEventIndex;
+							this.currentEventIndex = n;
+							this.onChangeEvent();
+						}
+						this.prevEventIndex = this.currentEventIndex;
+						this.currentEventIndex = n;
+						return n;
+					}else{
+						console.log("again");
+						this.dice();
+					}
+				}else{
+					// game over
+					// i = 目前最高分的end
+					var i = this.countScore.indexOf(Math.max.apply(null,this.countScore));
+					console.log("game over " + i);
+					this.initEnd(i);
+				}
+			},
+			onChangeEvent: function(){
+				console.log("currentEventIndex Watched.");
+				this.log = "currentEventIndex Watched.";
+				if (this.currentStep == 2){
+					this.initEvent(this.currentEventIndex);
+				}
+			},
+			runEvent: function(){
+				// 跑對話
+				if(this.currentLyricIndex == this.currentLyricArray.length - 1 ){
+				}else{
+					this.currentLyricIndex++;
+				}		
+			},
+			select: function(myOption){
+				var ev =this.scenario.event[this.currentEventIndex];
+				var myAction = (myOption == true ? ev.trueAction : ev.falseAction);
+				// 算分
+				for (var i = 0 ; i < myAction.score.length ; i++) {
+					console.log(myAction.score[i][0] + "th ending addscore" + myAction.score[i][1] );
+					this.countScore[myAction.score[i][0]] += myAction.score[i][1];
+					this.$forceUpdate();
+					// 檢查分數夠了沒
+					if (this.countScore[myAction.score[i][0]] > this.scenario.endScore -1 ){
+						// end
+						console.log("go to end " + i);
+						this.initEnd(i);
+					}else{
+						// 繼續game
+						// 檢查是否isOnce
+						if( ev.isOnce == true ){
+							this.scenario.event[this.currentEventIndex].isAvalible = false;
+							this.$forceUpdate();
+						}
+						// 跳轉
+						// 檢查是否有avalible的必去
+						console.log(myAction.forceTo);
+						if(myAction.forceTo != null){
+							var nextEv = this.scenario.event[myAction.forceTo];
+							if ( (nextEv.specificRef == null || nextEv.specificRef == this.currentEventIndex ) && nextEv.isAvalible == true ){
+								//跳轉指定event
+								this.prevEventIndex = this.currentEventIndex;
+								this.currentEventIndex = myAction.forceTo;
+								this.onChangeEvent();
+							}
+							else{
+								// dice event
+								this.dice();
+							}
+						}else{
+							// dice event
+							this.dice();
+						}
+						// end of 繼續game
+					}
+				}
+			},
+			initEnd: function(index){
+				console.log( index + ":" + this.scenario.endEvent[index].name);
+				this.currentStep = 3;
+				this.currentEndIndex = index;
+				this.currentLyricIndex = 0;
+				this.currentLyricArray = this.scenario.endEvent[index].lyric;
+				this.currentRoleArray = this.scenario.endEvent[index].role;
+				this.$forceUpdate();
+			},
+			runEndEvent: function(){
+				// 跑對話
+				if(this.currentLyricIndex == this.currentLyricArray.length - 1 ){
+					this.currentStep = 4;
+				}else{
+					this.currentLyricIndex++;
+				}		
+			},
+			reset: function(){
+				this.currentStep = 0;
+				this.currentEventIndex = -1;
+				this.prevEventIndex = -1;
+				this.currentRoleArray = [];
+				this.currentLyricArray = [];
+				this.currentLyricIndex = 0;
+				for (var i = 0 ; i < this.countScore.length; i++) {
+					this.countScore[i] = 0;
+				}
+				this.trueOption = "Y";
+				this.falseOption = "N";
+				this.currentEndIndex = -1;
+				this.log = "";
+				this.$forceUpdate();
+			}
+		}
+	})
+
+</script>
+
+<!-- end specific_javascript -->
+</body>
+</html>

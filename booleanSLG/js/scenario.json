@@ -1,0 +1,159 @@
+{
+  "tutorial": {
+    "role": [
+      0,
+      1
+    ],
+    "lyric": [
+      "e0-0",
+      "e0-1"
+    ]
+  },
+  "role": [
+    "tutorial role",
+    "r1",
+    "r2"
+  ],
+  "endScore": 10,
+  "event": [
+    {
+      "isAvalible": true,
+      "isOnce": false,
+      "specificRef": null,
+      "role": [
+        1,
+        1
+      ],
+      "lyric": [
+        "e0-0",
+        "e0-1"
+      ],
+      "trueAction": {
+        "option": "yes",
+        "score": [
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            -1
+          ]
+        ],
+        "forceTo": null
+      },
+      "falseAction": {
+        "option": "no...",
+        "score": [
+          [
+            0,
+            -2
+          ]
+        ],
+        "forceTo": 2
+      }
+    },
+    {
+      "isAvalible": true,
+      "isOnce": true,
+      "specificRef": null,
+      "role": [
+        1,
+        1
+      ],
+      "lyric": [
+        "e1-0",
+        "e1-1"
+      ],
+      "trueAction": {
+        "option": "yes",
+        "score": [
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            -1
+          ]
+        ],
+        "forceTo": null
+      },
+      "falseAction": {
+        "option": "no...",
+        "score": [
+          [
+            0,
+            -2
+          ]
+        ],
+        "forceTo": null
+      }
+    },
+    {
+      "isAvalible": true,
+      "isOnce": false,
+      "specificRef": 0,
+      "role": [
+        1,
+        1
+      ],
+      "lyric": [
+        "e2-0",
+        "e2-1"
+      ],
+      "trueAction": {
+        "option": "yes",
+        "score": [
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            -1
+          ]
+        ],
+        "forceTo": null
+      },
+      "falseAction": {
+        "option": "no...",
+        "score": [
+          [
+            0,
+            -2
+          ]
+        ],
+        "forceTo": null
+      }
+    }
+  ],
+  "endEvent": [
+    {
+      "name": "r0he",
+      "role": [
+        1,
+        2,
+        1
+      ],
+      "lyric": [
+        "end0 lyric0",
+        "end0 lyric1",
+        "end0 lyric2"
+      ]
+    },
+    {
+      "name": "r0be",
+      "role": [
+        2,
+        2,
+        2
+      ],
+      "lyric": [
+        "end1 lyric0",
+        "end1 lyric1",
+        "end1 lyric2"
+      ]
+    }
+  ]
+}

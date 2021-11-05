@@ -1,0 +1,42 @@
+<% var nav = [
+{
+	name: "HOME",
+	icon: "fa fa-home",
+	url: "index.html",
+	item:[]
+},{
+	name: "SPACES",
+	icon: "fa fa-map",
+	url: "space.html",
+	item:[]
+},{
+	name: "CAMERA",
+	icon: "fa fa-camera",
+	url: "camera.html",
+	item:[]
+},{
+	name: "INFO",
+	icon: "fa fa-info-circle",
+	url: "info.html",
+	item:[]
+},{
+	name: "GOODS",
+	icon: "fa fa-gift",
+	url: "goods.html",
+	item:[]
+}
+] %>
+<footer id="footer">
+	<nav class="footer-nav">
+		<ul class="footer-nav-list">
+			<% for(var i = 0; i<nav.length; i++){ %>
+			<li class="footer-nav-item">
+				<a <% if ( nav[i].url != "" ) { %>href="<%= nav[i].url %>"<% } %> >
+					<i class="<%= nav[i].icon %>"></i>
+					<span class="name"><%= nav[i].name %></span>		
+				</a>
+			</li>
+			<% } %>
+		</ul>
+	</nav>
+</footer><!--2017_7_4_05_00-->
